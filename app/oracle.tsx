@@ -143,6 +143,9 @@ const DOMAINS = [
 ];
 
 const TIERS = [
+  {id:0, name:"Free",   price:"Free",   period:"",   color:"#4a9eff",tagline:"Ask the Oracle anything",
+   features:["Oracle AI chat — world energy","Ask unlimited questions","No sign-up required"],
+   locked:["Personal birth chart","Domain scores","Best days","Deep dives","Team mode"]},
   {id:1, name:"Basic",  price:"$9.99",  period:"/mo",color:"#6b6580",tagline:"Your daily cosmic pulse",
    features:["All 9 domains — scores & verdicts","7-day forecast","Moon phase & retrograde alerts","Should I...? quick guide","World Energy snapshot"],
    locked:["Signal breakdown","30-day calendar","Deep domain dives","Birth time precision","Team mode"]},
@@ -150,8 +153,8 @@ const TIERS = [
    features:["Everything in Basic","Full signal breakdown — the WHY","30-day calendar + Best Days","Natal chart + transits","Domain deep-dives (all 9)","World vs Personal comparison"],
    locked:["Birth time + location precision","Team mode","Deeper domain specialisations"]},
   {id:3, name:"Pro",    price:"$79.99", period:"/mo",color:"#f6ad3c",tagline:"Maximum precision",featured:true,
-   features:["Everything in Plus","Birth time → Ascendant + Houses","Location → precise planetary hours","Dignity, combustion, cazimi, sect","Solar arc + progressions","Domain-specific world overlays"],
-   locked:["Oracle chatbot","Team mode"]},
+   features:["Everything in Plus","Birth time → Ascendant + Houses","Location → precise planetary hours","Dignity, combustion, cazimi, sect","Solar arc + progressions","Partner & compatibility mode — synastry"],
+   locked:["Oracle chatbot","Team mode (up to 5)"]},
   {id:4, name:"Pro+",   price:"$99.99", period:"/mo",color:"#e879a0",tagline:"Your personal Oracle",
    features:["Everything in Pro","Team mode — 5 people","Oracle AI chatbot","Daily push readings","People in Your Orbit","Weekly deep-dive reports"]},
 ];
@@ -694,11 +697,53 @@ const SH=({icon,title,sub,color}:any)=>(<div style={{marginBottom:12}}><div styl
 const HR=()=><div style={{height:1,background:CL.bdr,margin:"12px 0"}}/>;
 
 const CITIES:Record<string,{lat:number,lon:number}> = {
+  // 🇦🇺 Australia
   "Sydney":{lat:-33.87,lon:151.21},"Melbourne":{lat:-37.81,lon:144.96},"Brisbane":{lat:-27.47,lon:153.03},
-  "Perth":{lat:-31.95,lon:115.86},"London":{lat:51.51,lon:-0.13},"New York":{lat:40.71,lon:-74.01},
-  "Los Angeles":{lat:34.05,lon:-118.24},"Tokyo":{lat:35.68,lon:139.69},"Paris":{lat:48.85,lon:2.35},
-  "Dubai":{lat:25.20,lon:55.27},"Singapore":{lat:1.35,lon:103.82},"Mumbai":{lat:19.08,lon:72.88},
-  "Toronto":{lat:43.65,lon:-79.38},"Amsterdam":{lat:52.37,lon:4.90},"Berlin":{lat:52.52,lon:13.41},
+  "Perth":{lat:-31.95,lon:115.86},"Adelaide":{lat:-34.93,lon:138.60},"Gold Coast":{lat:-28.00,lon:153.43},
+  "Canberra":{lat:-35.28,lon:149.13},"Hobart":{lat:-42.88,lon:147.33},"Darwin":{lat:-12.46,lon:130.84},
+  "Newcastle (AU)":{lat:-32.93,lon:151.78},"Cairns":{lat:-16.92,lon:145.77},
+  // 🇬🇧 UK & Ireland
+  "London":{lat:51.51,lon:-0.13},"Manchester":{lat:53.48,lon:-2.24},"Birmingham":{lat:52.48,lon:-1.90},
+  "Edinburgh":{lat:55.95,lon:-3.19},"Glasgow":{lat:55.86,lon:-4.25},"Dublin":{lat:53.33,lon:-6.25},
+  "Leeds":{lat:53.80,lon:-1.55},"Bristol":{lat:51.45,lon:-2.59},"Liverpool":{lat:53.41,lon:-2.99},
+  // 🇺🇸 USA
+  "New York":{lat:40.71,lon:-74.01},"Los Angeles":{lat:34.05,lon:-118.24},"Chicago":{lat:41.88,lon:-87.63},
+  "Houston":{lat:29.76,lon:-95.37},"Phoenix":{lat:33.45,lon:-112.07},"Philadelphia":{lat:39.95,lon:-75.17},
+  "San Antonio":{lat:29.42,lon:-98.49},"San Diego":{lat:32.72,lon:-117.16},"Dallas":{lat:32.78,lon:-96.80},
+  "San Francisco":{lat:37.77,lon:-122.42},"Seattle":{lat:47.61,lon:-122.33},"Denver":{lat:39.74,lon:-104.98},
+  "Miami":{lat:25.77,lon:-80.19},"Atlanta":{lat:33.75,lon:-84.39},"Boston":{lat:42.36,lon:-71.06},
+  "Las Vegas":{lat:36.17,lon:-115.14},"Portland":{lat:45.52,lon:-122.68},"Austin":{lat:30.27,lon:-97.74},
+  "Nashville":{lat:36.17,lon:-86.78},"Minneapolis":{lat:44.98,lon:-93.27},
+  // 🇨🇦 Canada
+  "Toronto":{lat:43.65,lon:-79.38},"Vancouver":{lat:49.25,lon:-123.12},"Montreal":{lat:45.50,lon:-73.57},
+  "Calgary":{lat:51.05,lon:-114.07},"Ottawa":{lat:45.42,lon:-75.69},"Edmonton":{lat:53.55,lon:-113.49},
+  // 🇪🇺 Europe
+  "Paris":{lat:48.85,lon:2.35},"Berlin":{lat:52.52,lon:13.41},"Madrid":{lat:40.42,lon:-3.70},
+  "Rome":{lat:41.90,lon:12.50},"Amsterdam":{lat:52.37,lon:4.90},"Vienna":{lat:48.21,lon:16.37},
+  "Zurich":{lat:47.38,lon:8.54},"Brussels":{lat:50.85,lon:4.35},"Lisbon":{lat:38.72,lon:-9.14},
+  "Barcelona":{lat:41.39,lon:2.15},"Milan":{lat:45.46,lon:9.19},"Munich":{lat:48.14,lon:11.58},
+  "Prague":{lat:50.08,lon:14.44},"Warsaw":{lat:52.23,lon:21.01},"Budapest":{lat:47.50,lon:19.04},
+  "Stockholm":{lat:59.33,lon:18.07},"Oslo":{lat:59.91,lon:10.75},"Copenhagen":{lat:55.68,lon:12.57},
+  "Helsinki":{lat:60.17,lon:24.94},"Athens":{lat:37.98,lon:23.73},"Bucharest":{lat:44.43,lon:26.10},
+  "Kiev":{lat:50.45,lon:30.52},"Zagreb":{lat:45.81,lon:15.98},
+  // 🌍 Middle East & Africa
+  "Dubai":{lat:25.20,lon:55.27},"Abu Dhabi":{lat:24.47,lon:54.37},"Riyadh":{lat:24.69,lon:46.72},
+  "Istanbul":{lat:41.01,lon:28.95},"Tel Aviv":{lat:32.08,lon:34.78},"Cairo":{lat:30.06,lon:31.25},
+  "Nairobi":{lat:-1.29,lon:36.82},"Lagos":{lat:6.52,lon:3.38},"Johannesburg":{lat:-26.20,lon:28.04},
+  "Cape Town":{lat:-33.93,lon:18.42},"Casablanca":{lat:33.59,lon:-7.62},"Accra":{lat:5.56,lon:-0.20},
+  // 🌏 Asia & Pacific
+  "Singapore":{lat:1.35,lon:103.82},"Tokyo":{lat:35.68,lon:139.69},"Seoul":{lat:37.57,lon:126.98},
+  "Mumbai":{lat:19.08,lon:72.88},"Delhi":{lat:28.61,lon:77.21},"Bangalore":{lat:12.97,lon:77.59},
+  "Shanghai":{lat:31.23,lon:121.47},"Beijing":{lat:39.91,lon:116.39},"Hong Kong":{lat:22.32,lon:114.17},
+  "Bangkok":{lat:13.75,lon:100.52},"Jakarta":{lat:-6.21,lon:106.85},"Kuala Lumpur":{lat:3.14,lon:101.69},
+  "Manila":{lat:14.60,lon:120.98},"Taipei":{lat:25.03,lon:121.57},"Osaka":{lat:34.69,lon:135.50},
+  "Karachi":{lat:24.86,lon:67.01},"Dhaka":{lat:23.72,lon:90.41},"Colombo":{lat:6.93,lon:79.85},
+  "Kathmandu":{lat:27.72,lon:85.32},"Yangon":{lat:16.87,lon:96.19},
+  // 🌎 Latin America
+  "São Paulo":{lat:-23.55,lon:-46.63},"Rio de Janeiro":{lat:-22.91,lon:-43.17},"Buenos Aires":{lat:-34.60,lon:-58.38},
+  "Mexico City":{lat:19.43,lon:-99.13},"Bogotá":{lat:4.71,lon:-74.07},"Lima":{lat:-12.05,lon:-77.04},
+  "Santiago":{lat:-33.46,lon:-70.65},"Caracas":{lat:10.48,lon:-66.88},"Montevideo":{lat:-34.90,lon:-56.19},
+  "Quito":{lat:-0.23,lon:-78.52},"Havana":{lat:23.14,lon:-82.36},
 };
 
 // ═══════════════════════════════════════════════════════════════
@@ -715,18 +760,41 @@ export default function App() {
   const [loading,setLoading]=useState(false);
   const [error,setError]=useState<string|null>(null);
   const [expanded,setExpanded]=useState<string|null>(null);
-  const [tier,setTier]=useState(1);
+  const [tier,setTier]=useState(0);
   const [deepDiveId,setDeepDiveId]=useState<string|null>(null);
   const [teamMembers,setTeamMembers]=useState<any[]>([]);
   const [newName,setNewName]=useState("");
   const [newDob,setNewDob]=useState("");
   const [teamData,setTeamData]=useState<any[]>([]);
+  const [currentCity,setCurrentCity]=useState("");
+  // Partner mode (Pro tier 3+)
+  const [partnerName,setPartnerName]=useState("");
+  const [partnerDob,setPartnerDob]=useState("");
+  const [partnerData,setPartnerData]=useState<any>(null);
 
   // ── FIX 1: Chat state — explicit open/close, not toggle-only ──
+  const INIT_MSG={role:"oracle" as const,text:"Ask me anything about your reading — I'll give you a straight answer based on what the planets are actually doing today. 🔮"};
   const [chatOpen,setChatOpen]=useState(false);
-  const [chatMessages,setChatMessages]=useState<{role:"user"|"oracle",text:string,isError?:boolean}[]>([{role:"oracle",text:"Ask me anything about your reading — I'll give you a straight answer based on what the planets are actually doing today. 🔮"}]);
+  const [chatMessages,setChatMessages]=useState<{role:"user"|"oracle",text:string,isError?:boolean}[]>([INIT_MSG]);
   const [chatInput,setChatInput]=useState("");
   const [chatLoading,setChatLoading]=useState(false);
+  const [showSaved,setShowSaved]=useState(false);
+  const [savedChats,setSavedChats]=useState<{id:string,date:string,preview:string,messages:any[]}[]>(()=>{
+    try{const s=localStorage.getItem("oracle_saved_chats");return s?JSON.parse(s):[];}catch{return[];}
+  });
+  const MAX_SAVES=5;
+
+  const clearChat=()=>{setChatMessages([INIT_MSG]);setChatInput("");};
+
+  const saveChat=()=>{
+    const msgs=chatMessages.filter((_,i)=>i>0&&!chatMessages[i].isError);
+    if(msgs.length<1)return;
+    const newSave={id:Date.now().toString(),date:new Date().toLocaleDateString("en-AU",{day:"numeric",month:"short",year:"numeric",hour:"2-digit",minute:"2-digit"}),preview:chatMessages[1]?.text?.slice(0,60)+"...",messages:chatMessages};
+    setSavedChats(prev=>{const updated=[newSave,...prev].slice(0,MAX_SAVES);try{localStorage.setItem("oracle_saved_chats",JSON.stringify(updated));}catch{}return updated;});
+  };
+
+  const loadChat=(saved:{messages:any[]})=>{setChatMessages(saved.messages);setShowSaved(false);};
+  const deleteSave=(id:string)=>{setSavedChats(prev=>{const updated=prev.filter(s=>s.id!==id);try{localStorage.setItem("oracle_saved_chats",JSON.stringify(updated));}catch{}return updated;});};
 
   // ── FIX 2: Rich personal context builder for chat ──
   const buildChatContext=useCallback(()=>{
@@ -734,9 +802,22 @@ export default function App() {
     
     const hasPersonal=!!dob&&data.personalDomains?.length>0;
     const retros=data.retros?.map((r:any)=>`${r.name} ℞ in ${r.sign?.name}`).join(", ")||"None";
-    
+
+    // Current location / local time context
+    const now=new Date();
+    const localHour=now.getHours();
+    const localMinute=now.getMinutes();
+    const localTimeStr=`${String(localHour).padStart(2,"0")}:${String(localMinute).padStart(2,"0")}`;
+    const dayNames=["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
+    const localDay=dayNames[now.getDay()];
+    const timeOfDay=localHour<6?"late night":localHour<12?"morning":localHour<17?"afternoon":localHour<21?"evening":"night";
+    const locationLine=currentCity
+      ?`User is currently in: ${currentCity} — local time: ${localTimeStr} (${localDay} ${timeOfDay})`
+      :`User location: not specified — device local time: ${localTimeStr} (${localDay} ${timeOfDay})`;
+
     let ctx=`=== ORACLE READING CONTEXT ===
 Date Analysed: ${targetDate}
+${locationLine}
 Moon Phase: ${data.mp?.name} (${data.mp?.energy})
 Void of Course Moon: ${data.voc?"YES — active, actions tend to fizzle":"No"}
 Retrograde Planets: ${retros}
@@ -801,7 +882,7 @@ Retrograde Planets: ${retros}
     }
 
     return ctx;
-  },[data,dob,targetDate]);
+  },[data,dob,targetDate,currentCity]);
 
   // ── FIX 2: sendChat with full personal context and error display ──
   const sendChat=useCallback(async()=>{
@@ -815,7 +896,7 @@ Retrograde Planets: ${retros}
     const hasPersonal=!!dob&&data?.personalDomains?.length>0;
 
     try{
-      const res=await fetch("https://api.anthropic.com/v1/messages",{
+      const res=await fetch("/api/chat",{
         method:"POST",
         headers:{"Content-Type":"application/json"},
         body:JSON.stringify({
@@ -944,14 +1025,14 @@ ${ctx}`,
         return{domain:dom,top3:sorted.slice(0,3).map(f=>({date:f.date,score:f.personalDomains[di]?.score||f.worldDomains[di].score,prob:f.personalDomains[di]?.probability||f.worldDomains[di].probability})),bottom3:sorted.slice(-3).reverse().map(f=>({date:f.date,score:f.personalDomains[di]?.score||f.worldDomains[di].score}))};
       });
 
-      setData({transit,natal,worldDomains,personalDomains,mp,voc,retros,stellia,sunSign,moonSign,birthGK,transitGK,forecast,bestDays,allAspects:dob?getAspects(transit,natal,tier>=2):[],midpoints,mutualReceptions,antiscia,solarReturnBonus,houses,ascLng,partOfFortune,hasTime,hasPlace,solarReturnBonus});
+      setData({transit,natal,worldDomains,personalDomains,mp,voc,retros,stellia,sunSign,moonSign,birthGK,transitGK,forecast,bestDays,allAspects:dob?getAspects(transit,natal,tier>=2):[],midpoints,mutualReceptions,antiscia,solarReturnBonus,houses,ascLng,partOfFortune,hasTime,hasPlace});
     }catch(err:any){
       // ── FIX 3: Show compute errors in UI ──
       const msg=err?.message||String(err)||"Unknown computation error";
       setError(`Computation Error: ${msg}`);
     }
     setLoading(false);
-  },[dob,targetDate,targetTime,birthTime,birthCity,tier]);
+  },[dob,targetDate,targetTime,birthTime,birthCity,currentCity,tier]);
 
   useEffect(()=>{compute();},[targetDate,targetTime,dob,birthTime,tier]);
 
@@ -968,6 +1049,38 @@ ${ctx}`,
   };
   const addTeam=()=>{if(!newName||!newDob)return;const m={name:newName,dob:newDob,id:Date.now()};const u=[...teamMembers,m];setTeamMembers(u);setNewName("");setNewDob("");setTeamData(u.map(computeTeam));};
   const removeTeam=(id:number)=>{const u=teamMembers.filter((m:any)=>m.id!==id);setTeamMembers(u);setTeamData(u.map(computeTeam));};
+
+  const computePartner=(name:string,pDob:string)=>{
+    const bDate=new Date(pDob+"T12:00:00"),tDate=new Date(targetDate+"T12:00:00");
+    const nt=getPlanets(bDate),tr=getPlanets(tDate,targetTime);
+    const sa=getSolarArcs(nt,bDate,tDate);
+    const ds=DOMAINS.map(d=>({...d,...scorePersonalDomain(d,nt,tr,tDate,bDate,tier,true,sa,[])}));
+    const overall=ds.reduce((s:number,d:any)=>s+d.score,0)/ds.length;
+    const topD=ds.reduce((b:any,x:any)=>x.score>b.score?x:b,ds[0]);
+    const botD=ds.reduce((b:any,x:any)=>x.score<b.score?x:b,ds[0]);
+    const prob=Math.max(20,Math.min(90,Math.round(50+overall*0.25)));
+    // Synastry compatibility: compare natal charts if user has DOB
+    let compatScore=50,compatVerdict="Unknown — add your own DOB for synastry";
+    if(dob){
+      const myNatal=getPlanets(new Date(dob+"T12:00:00"));
+      // Simple synastry: count harmonious vs tense aspects between charts
+      let harmony=0,tension=0;
+      myNatal.forEach((mp:any)=>{
+        nt.forEach((pp:any)=>{
+          const diff=Math.abs(((mp.lng-pp.lng)+360)%360);
+          const angle=diff>180?360-diff:diff;
+          if(Math.abs(angle-0)<8||Math.abs(angle-120)<6||Math.abs(angle-60)<5)harmony++;
+          if(Math.abs(angle-90)<6||Math.abs(angle-180)<6||Math.abs(angle-150)<5)tension++;
+        });
+      });
+      compatScore=Math.max(15,Math.min(95,Math.round(50+((harmony-tension)*2.5))));
+      compatVerdict=compatScore>=75?"Strong natural synastry — deep alignment":compatScore>=55?"Good compatibility — complementary energies":compatScore>=40?"Mixed synastry — requires conscious effort":"Challenging synastry — growth through friction";
+    }
+    return{name,dob:pDob,overall,probability:prob,topDomain:topD,bottomDomain:botD,ds,compatScore,compatVerdict};
+  };
+  const runPartner=()=>{if(!partnerName||!partnerDob)return;setPartnerData(computePartner(partnerName,partnerDob));};
+  const clearPartner=()=>{setPartnerData(null);setPartnerName("");setPartnerDob("");};
+
 
   const tierInfo=TIERS.find(t=>t.id===tier)||TIERS[0];
   const SC:any={card:{background:CL.card,border:`1px solid ${CL.bdr}`,borderRadius:14,padding:18,marginBottom:12}};
@@ -991,6 +1104,354 @@ ${ctx}`,
     letterSpacing:0.3,
     flexShrink:0 as const,
   };
+
+  // ── FREE TIER: Hero + Chat + World Energy + Upgrade Journey ──
+  if(tier===0){
+    const worldSnippet = data?.worldDomains?.slice(0,3)||[];
+    const allWorld = data?.worldDomains||[];
+    return(
+      <div style={{minHeight:"100vh",background:CL.bg,color:CL.txt,fontFamily:"system-ui,sans-serif",display:"flex",flexDirection:"column",alignItems:"center",paddingBottom:120}}>
+        <style>{`
+          *{box-sizing:border-box}
+          ::-webkit-scrollbar{width:4px;background:#07060d}
+          ::-webkit-scrollbar-thumb{background:#1f1b3a;border-radius:2px}
+          @keyframes orbPulse{0%,100%{box-shadow:0 0 0 0 #9b7fe640,0 0 30px #9b7fe630}50%{box-shadow:0 0 0 12px #9b7fe610,0 0 60px #9b7fe650}}
+          @keyframes orbFloat{0%,100%{transform:translateY(0px)}50%{transform:translateY(-6px)}}
+          @keyframes fadeUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+          @keyframes shimmer{0%{background-position:200% center}100%{background-position:-200% center}}
+          @keyframes barGlow{0%,100%{box-shadow:0 0 20px #9b7fe620,0 4px 40px #00000060}50%{box-shadow:0 0 35px #9b7fe640,0 4px 40px #00000080}}
+          @keyframes chipFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-2px)}}
+          .oracle-input:focus{outline:none!important}
+          .oracle-input::placeholder{color:#6b6580}
+          .upgrade-tier:hover{transform:translateY(-2px);border-color:#9b7fe680!important}
+          .upgrade-tier{transition:transform 0.2s,border-color 0.2s}
+        `}</style>
+
+        {/* ── TOP NAV ── */}
+        <div style={{width:"100%",maxWidth:680,padding:"18px 20px 0",display:"flex",flexDirection:"column",alignItems:"center",gap:12}}>
+          <div style={{width:"100%",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8}}>
+              <span style={{fontSize:18}}>🔮</span>
+              <span style={{fontSize:13,fontWeight:900,color:CL.acc,letterSpacing:2}}>MYORACLE</span>
+            </div>
+            <div style={{fontSize:9,color:CL.dim,letterSpacing:1}}>SELECT YOUR PLAN</div>
+          </div>
+          {/* Tier switcher — same as paid tier */}
+          <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:5,flexWrap:"wrap",width:"100%"}}>
+            {TIERS.map(t=>(
+              <button key={t.id} onClick={()=>setTier(t.id)}
+                style={{
+                  background:tier===t.id?`${t.color}25`:"transparent",
+                  color:tier===t.id?t.color:"#6b6580",
+                  border:`1px solid ${tier===t.id?t.color:CL.bdr}`,
+                  borderRadius:20,padding:"4px 14px",
+                  fontSize:10,fontWeight:700,cursor:"pointer",
+                  fontFamily:"system-ui",letterSpacing:0.5,
+                  transition:"all 0.15s",
+                }}>{t.name} {t.price}</button>
+            ))}
+          </div>
+        </div>
+
+        {/* ── HERO ── */}
+        <div style={{width:"100%",maxWidth:680,padding:"48px 20px 0",animation:"fadeUp 0.8s ease both"}}>
+
+          {/* Headline */}
+          <div style={{textAlign:"center",marginBottom:24}}>
+            <h1 style={{
+              fontSize:"clamp(26px,6vw,42px)",fontWeight:900,margin:"0 0 16px",lineHeight:1.1,
+              background:`linear-gradient(135deg,${CL.acc} 0%,#e879a0 50%,${CL.pur} 100%)`,
+              backgroundSize:"200% auto",
+              WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",
+              animation:"shimmer 4s linear infinite",
+            }}>
+              What does the universe<br/>have for you today?
+            </h1>
+
+            {/* Sub-headline */}
+            <p style={{fontSize:"clamp(14px,2vw,17px)",color:"rgba(232,228,240,0.55)",margin:"0 0 8px",lineHeight:1.7,fontWeight:400}}>
+              Built on <strong style={{color:"rgba(232,228,240,0.9)",fontWeight:700}}>12 simultaneous astrological systems.</strong> Real % probability.
+            </p>
+            <p style={{fontSize:"clamp(11px,1.5vw,13px)",color:"rgba(232,228,240,0.35)",margin:"0 0 24px",lineHeight:1.8}}>
+              Every intelligence layer — finance cycles, love timing, career windows, health, travel, and contracts — scored with actual numbers, not vague forecasts.
+            </p>
+
+            {/* JP Morgan quote — left-bordered card */}
+            <div style={{
+              display:"flex",alignItems:"flex-start",gap:12,
+              background:`${CL.pur}0d`,
+              borderLeft:`3px solid ${CL.pur}55`,
+              borderRadius:"0 10px 10px 0",
+              padding:"14px 18px",
+              marginBottom:24,
+              textAlign:"left",
+            }}>
+              <span style={{fontFamily:"Georgia,serif",fontSize:34,color:`${CL.pur}50`,lineHeight:1,flexShrink:0,marginTop:-4}}>"</span>
+              <div>
+                <p style={{fontFamily:"Georgia,serif",fontSize:15,fontStyle:"italic",color:"rgba(232,228,240,0.75)",lineHeight:1.55,margin:"0 0 6px"}}>
+                  Millionaires don't use astrology — billionaires do.
+                </p>
+                <p style={{fontSize:10,letterSpacing:2,color:`${CL.pur}70`,textTransform:"uppercase",fontWeight:700,margin:0}}>
+                  J.P. Morgan · Founder, JP Morgan &amp; Co.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* ── HERO CHAT BAR — only visible before scroll ── */}
+          <div style={{
+            display:"flex",alignItems:"center",gap:0,
+            background:"#110e22",
+            border:`1.5px solid ${CL.pur}50`,
+            borderRadius:60,
+            padding:"6px 8px 6px 6px",
+            animation:"barGlow 4s ease infinite",
+            marginBottom:14,
+          }}>
+            <button
+              onClick={()=>{if(!data)compute();}}
+              style={{
+                width:52,height:52,borderRadius:"50%",flexShrink:0,
+                background:`linear-gradient(135deg,${CL.pur},${CL.acc})`,
+                border:"none",fontSize:26,cursor:"pointer",
+                display:"flex",alignItems:"center",justifyContent:"center",
+                animation:"orbPulse 3s ease infinite, orbFloat 4s ease infinite",
+                boxShadow:`0 0 20px ${CL.pur}60`,
+              }}>🔮</button>
+            <input
+              className="oracle-input"
+              value={chatInput}
+              onChange={e=>setChatInput(e.target.value)}
+              onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();if(!data)compute();sendChat();}}}
+              onFocus={()=>{if(!data)compute();}}
+              placeholder="Ask the Oracle anything…"
+              style={{
+                flex:1,background:"transparent",border:"none",
+                color:CL.txt,fontSize:15,padding:"0 16px",
+                outline:"none",lineHeight:1,
+              }}
+            />
+            <button
+              onClick={()=>{if(!data)compute();sendChat();}}
+              disabled={!chatInput.trim()||chatLoading}
+              style={{
+                width:42,height:42,borderRadius:"50%",flexShrink:0,
+                background:chatInput.trim()&&!chatLoading?`linear-gradient(135deg,${CL.pur},${CL.acc})`:`${CL.pur}20`,
+                border:`1px solid ${chatInput.trim()&&!chatLoading?CL.pur:CL.bdr}`,
+                color:chatInput.trim()&&!chatLoading?"#000":CL.dim,
+                fontSize:18,cursor:chatInput.trim()&&!chatLoading?"pointer":"default",
+                display:"flex",alignItems:"center",justifyContent:"center",
+                transition:"all 0.2s",
+              }}>
+              {chatLoading?"·":"→"}
+            </button>
+          </div>
+
+          {/* Quick prompt chips */}
+          <div style={{display:"flex",gap:8,flexWrap:"wrap",justifyContent:"center",marginBottom:8}}>
+            {["Should I sign today?","Love energy now?","Best day this week?","Career move timing?","Financial outlook?"].map((q,i)=>(
+              <button key={q} onClick={()=>{setChatInput(q);if(!data)compute();}}
+                style={{
+                  background:`${CL.pur}12`,border:`1px solid ${CL.pur}30`,
+                  borderRadius:20,padding:"6px 14px",fontSize:11,
+                  color:CL.dim,cursor:"pointer",whiteSpace:"nowrap",
+                  animation:`chipFloat ${2.2+i*0.15}s ease infinite`,
+                }}>{q}</button>
+            ))}
+          </div>
+        </div>
+
+        {/* ── CHAT MESSAGES ── */}
+        {chatMessages.length>1&&(
+          <div style={{width:"100%",maxWidth:640,padding:"20px 20px 0",display:"flex",flexDirection:"column",gap:12,animation:"fadeUp 0.4s ease"}}>
+            {chatMessages.map((m,i)=>(
+              <div key={i} style={{display:"flex",justifyContent:m.role==="user"?"flex-end":"flex-start",gap:10,alignItems:"flex-start"}}>
+                {m.role==="oracle"&&<div style={{fontSize:22,flexShrink:0,marginTop:2}}>🔮</div>}
+                <div style={{
+                  maxWidth:"82%",padding:"12px 16px",
+                  borderRadius:m.role==="user"?"18px 18px 4px 18px":"4px 18px 18px 18px",
+                  background:m.role==="user"?`linear-gradient(135deg,${CL.pur},${CL.acc})`:m.isError?`${CL.red}15`:CL.card,
+                  color:m.role==="user"?"#000":m.isError?CL.red:CL.txt,
+                  fontSize:13,lineHeight:1.7,whiteSpace:"pre-wrap",
+                  border:m.isError?`1px solid ${CL.red}30`:`1px solid ${m.role==="user"?"transparent":CL.bdr}`,
+                }}>{m.text}</div>
+              </div>
+            ))}
+            {chatLoading&&(
+              <div style={{display:"flex",gap:10,alignItems:"flex-start"}}>
+                <div style={{fontSize:22}}>🔮</div>
+                <div style={{padding:"12px 16px",background:CL.card,border:`1px solid ${CL.bdr}`,borderRadius:"4px 18px 18px 18px",color:CL.dim,fontSize:13}}>Reading the stars…</div>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── LIVE WORLD ENERGY ── */}
+        {allWorld.length>0&&(
+          <div style={{width:"100%",maxWidth:640,padding:"32px 20px 0",animation:"fadeUp 0.6s ease 0.2s both"}}>
+            <div style={{fontSize:10,color:CL.acc,fontWeight:800,letterSpacing:3,marginBottom:14,textAlign:"center"}}>⚡ TODAY'S WORLD ENERGY — LIVE</div>
+            <div style={{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:8}}>
+              {worldSnippet.map((d:any,i:number)=>(
+                <div key={i} style={{background:CL.card,border:`1px solid ${CL.bdr}`,borderRadius:14,padding:"14px 12px",textAlign:"center",position:"relative",overflow:"hidden"}}>
+                  <div style={{position:"absolute",top:0,left:0,right:0,height:2,background:d.probability>60?CL.grn:d.probability>40?CL.acc:CL.red,borderRadius:"14px 14px 0 0"}}/>
+                  <div style={{fontSize:20,marginBottom:6}}>{d.icon}</div>
+                  <div style={{fontSize:10,fontWeight:700,color:CL.txt,marginBottom:4}}>{d.name}</div>
+                  <div style={{fontSize:22,fontWeight:900,color:d.probability>60?CL.grn:d.probability>40?CL.acc:CL.red,lineHeight:1}}>{d.probability}%</div>
+                  <div style={{fontSize:9,color:CL.dim,marginTop:4,lineHeight:1.4}}>{d.verdict}</div>
+                </div>
+              ))}
+            </div>
+            {allWorld.length>3&&(
+              <div style={{display:"flex",gap:8,marginTop:8,opacity:0.4,filter:"blur(1px)",pointerEvents:"none"}}>
+                {allWorld.slice(3,6).map((d:any,i:number)=>(
+                  <div key={i} style={{flex:1,background:CL.card,border:`1px solid ${CL.bdr}`,borderRadius:14,padding:"14px 12px",textAlign:"center"}}>
+                    <div style={{fontSize:20,marginBottom:4}}>{d.icon}</div>
+                    <div style={{fontSize:10,fontWeight:700,color:CL.txt}}>🔒 Locked</div>
+                    <div style={{fontSize:18,fontWeight:900,color:CL.dim}}>??%</div>
+                  </div>
+                ))}
+              </div>
+            )}
+            <div style={{textAlign:"center",marginTop:10,fontSize:10,color:CL.dim,fontStyle:"italic"}}>
+              {allWorld.length>3?`+${allWorld.length-3} more domains locked`:"Unlock all 9 domains with your birth chart"} · <span style={{color:CL.acc,cursor:"pointer",fontStyle:"normal"}} onClick={()=>setTier(1)}>See full reading →</span>
+            </div>
+          </div>
+        )}
+
+        {/* ── WHAT'S INSIDE — Feature showcase ── */}
+        <div style={{width:"100%",maxWidth:640,padding:"40px 20px 0",animation:"fadeUp 0.6s ease 0.4s both"}}>
+          <div style={{fontSize:10,color:CL.pur,fontWeight:800,letterSpacing:3,marginBottom:6,textAlign:"center"}}>WHAT AWAITS YOU INSIDE</div>
+          <div style={{fontSize:13,color:CL.dim,textAlign:"center",marginBottom:24,lineHeight:1.6}}>
+            This is just the surface. Here's what your full Oracle looks like:
+          </div>
+          <div style={{display:"flex",flexDirection:"column",gap:12}}>
+            {[
+              {icon:"🎯",color:CL.grn,title:"% Probability Scores",desc:"Every domain scored 0–100% based on live planetary data. Know your actual odds before signing a contract, booking a date, or making a decision. Real numbers — not vague horoscopes.",badge:"Basic+"},
+              {icon:"📅",color:CL.acc,title:"Your Best Days This Month",desc:"A 30-day optimal timing map built around your birth chart. See exactly which days peak for love, career moves, financial decisions, creative work, and travel.",badge:"Basic+"},
+              {icon:"🌙",color:CL.pur,title:"Personal Birth Chart Reading",desc:"Natal transits, progressions, and solar arcs — all running simultaneously against today's sky. The Oracle knows where every planet was when you were born and what that means right now.",badge:"Basic+"},
+              {icon:"💼",color:"#45d0c8",title:"9 Life Domain Deep Dives",desc:"Love · Career · Finance · Health · Travel · Creativity · Spiritual · Learning · Communication — each domain scored in detail, with specific actions tailored to the current cosmic weather.",badge:"Plus+"},
+              {icon:"👥",color:"#e879a0",title:"Team & Relationship Mode",desc:"Run compatibility readings for couples, business partners, or whole teams. See where you align and where friction lives — built on real synastry, not sun-sign guesswork.",badge:"Pro"},
+            ].map((f,i)=>(
+              <div key={i} style={{
+                background:CL.card,border:`1px solid ${CL.bdr}`,
+                borderLeft:`3px solid ${f.color}`,
+                borderRadius:16,padding:"16px 18px",
+                display:"flex",gap:14,alignItems:"flex-start",
+              }}>
+                <div style={{fontSize:28,flexShrink:0}}>{f.icon}</div>
+                <div style={{flex:1}}>
+                  <div style={{display:"flex",alignItems:"center",gap:8,marginBottom:4}}>
+                    <span style={{fontSize:13,fontWeight:800,color:CL.txt}}>{f.title}</span>
+                    <span style={{fontSize:9,background:`${f.color}20`,color:f.color,border:`1px solid ${f.color}40`,borderRadius:10,padding:"2px 8px",fontWeight:700,letterSpacing:1}}>{f.badge}</span>
+                  </div>
+                  <div style={{fontSize:11,color:CL.dim,lineHeight:1.7}}>{f.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── UPGRADE TIERS ── */}
+        <div style={{width:"100%",maxWidth:640,padding:"40px 20px 0",animation:"fadeUp 0.6s ease 0.6s both"}}>
+          <div style={{fontSize:10,color:CL.acc,fontWeight:800,letterSpacing:3,marginBottom:6,textAlign:"center"}}>CHOOSE YOUR DEPTH</div>
+          <div style={{fontSize:13,color:CL.dim,textAlign:"center",marginBottom:24,lineHeight:1.6}}>
+            Start with what calls to you. Upgrade any time.
+          </div>
+          <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
+            {TIERS.filter(t=>t.id>0).map(t=>(
+              <div key={t.id} className="upgrade-tier" onClick={()=>setTier(t.id)}
+                style={{
+                  background:t.id===2?`linear-gradient(160deg,${CL.card},#1a1035)`:CL.card,
+                  border:`1.5px solid ${t.id===2?CL.pur+"60":CL.bdr}`,
+                  borderRadius:16,padding:"18px 16px",cursor:"pointer",
+                  position:"relative",overflow:"hidden",
+                }}>
+                {t.id===2&&<div style={{position:"absolute",top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,${CL.pur},${CL.acc})`}}/>}
+                {t.id===2&&<div style={{position:"absolute",top:10,right:10,fontSize:9,background:`${CL.pur}30`,color:CL.pur,border:`1px solid ${CL.pur}50`,borderRadius:10,padding:"2px 8px",fontWeight:800,letterSpacing:1}}>POPULAR</div>}
+                <div style={{fontSize:9,color:t.color,fontWeight:800,letterSpacing:2,marginBottom:4}}>{t.name.toUpperCase()}</div>
+                <div style={{fontSize:20,fontWeight:900,color:CL.txt,marginBottom:2}}>{t.price}<span style={{fontSize:10,fontWeight:400,color:CL.dim}}>/mo</span></div>
+                <div style={{fontSize:10,color:CL.dim,lineHeight:1.6,marginTop:8}}>{t.tagline}</div>
+              </div>
+            ))}
+          </div>
+          <div style={{textAlign:"center",marginTop:20}}>
+            <button onClick={()=>setTier(1)} style={{
+              background:`linear-gradient(135deg,${CL.pur},${CL.acc})`,
+              color:"#000",border:"none",borderRadius:14,
+              padding:"14px 40px",fontSize:14,fontWeight:900,
+              cursor:"pointer",letterSpacing:1,width:"100%",
+              boxShadow:`0 4px 24px ${CL.pur}40`,
+            }}>✨ Start with Basic — $9.99/mo</button>
+            <div style={{fontSize:10,color:CL.dim,marginTop:8}}>Cancel any time · Instant access · No commitments</div>
+          </div>
+        </div>
+
+        {/* ── FOOTER ── */}
+        <div style={{width:"100%",maxWidth:640,padding:"40px 20px 0",textAlign:"center"}}>
+          <div style={{borderTop:`1px solid ${CL.bdr}`,paddingTop:24}}>
+            <div style={{display:"flex",justifyContent:"center",gap:20,marginBottom:12,flexWrap:"wrap"}}>
+              {[["About","/about"],["Terms","/terms"],["Privacy","/privacy"]].map(([label,href])=>(
+                <a key={href} href={href} style={{fontSize:11,color:CL.dim,textDecoration:"none"}}>{label}</a>
+              ))}
+            </div>
+            <div style={{fontSize:10,color:CL.dim,opacity:0.5}}>© {new Date().getFullYear()} MyOracle · For entertainment purposes · Not financial or medical advice</div>
+          </div>
+        </div>
+
+        {/* ── STICKY BOTTOM CHAT BAR ── */}
+        <div style={{
+          position:"fixed",bottom:0,left:0,right:0,zIndex:999,
+          background:`linear-gradient(to top,${CL.bg} 60%,${CL.bg}00)`,
+          padding:"16px 16px 20px",
+        }}>
+          <div style={{
+            maxWidth:640,margin:"0 auto",
+            display:"flex",alignItems:"center",gap:0,
+            background:"#110e22",
+            border:`1.5px solid ${CL.pur}50`,
+            borderRadius:60,
+            padding:"6px 8px 6px 6px",
+            boxShadow:`0 0 30px ${CL.pur}30,0 -4px 40px #00000080`,
+          }}>
+            <div style={{
+              width:46,height:46,borderRadius:"50%",flexShrink:0,
+              background:`linear-gradient(135deg,${CL.pur},${CL.acc})`,
+              display:"flex",alignItems:"center",justifyContent:"center",
+              fontSize:22,animation:"orbPulse 3s ease infinite",
+              boxShadow:`0 0 14px ${CL.pur}50`,
+            }}>🔮</div>
+            <input
+              className="oracle-input"
+              value={chatInput}
+              onChange={e=>setChatInput(e.target.value)}
+              onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();if(!data)compute();sendChat();}}}
+              onFocus={()=>{if(!data)compute();}}
+              placeholder="Ask the Oracle…"
+              style={{
+                flex:1,background:"transparent",border:"none",
+                color:CL.txt,fontSize:14,padding:"0 14px",
+                outline:"none",
+              }}
+            />
+            <button
+              onClick={()=>{if(!data)compute();sendChat();}}
+              disabled={!chatInput.trim()||chatLoading}
+              style={{
+                width:38,height:38,borderRadius:"50%",flexShrink:0,
+                background:chatInput.trim()&&!chatLoading?`linear-gradient(135deg,${CL.pur},${CL.acc})`:`${CL.pur}20`,
+                border:"none",color:chatInput.trim()&&!chatLoading?"#000":CL.dim,
+                fontSize:16,cursor:chatInput.trim()&&!chatLoading?"pointer":"default",
+                display:"flex",alignItems:"center",justifyContent:"center",
+                transition:"all 0.2s",
+              }}>
+              {chatLoading?"·":"→"}
+            </button>
+          </div>
+        </div>
+
+      </div>
+    );
+  }
 
   return(
     <div style={{background:CL.bg,color:CL.txt,minHeight:"100vh",fontFamily:"'Georgia','Palatino',serif",padding:"10px 14px",maxWidth:720,margin:"0 auto"}}>
@@ -1030,6 +1491,14 @@ ${ctx}`,
               {Object.keys(CITIES).map(c=><option key={c} value={c}>{c}</option>)}
             </select>
           </div>}
+          <div style={{flex:1,minWidth:110}}>
+            <label style={{fontSize:9,color:CL.dim,display:"block",marginBottom:3,fontFamily:"system-ui",letterSpacing:1}}>📍 WHERE ARE YOU NOW <span style={{color:CL.cyn,fontSize:8}}>(TIMEZONE)</span></label>
+            <select value={currentCity} onChange={e=>setCurrentCity(e.target.value)} style={{width:"100%",padding:"10px 10px",background:CL.card2,border:`1px solid ${CL.cyn}40`,borderRadius:10,color:currentCity?CL.txt:CL.dim,fontSize:13}}>
+              <option value="">Auto-detect...</option>
+              {Object.keys(CITIES).map(c=><option key={c} value={c}>{c}</option>)}
+            </select>
+            {!currentCity&&<div style={{fontSize:8,color:CL.cyn,marginTop:2,fontFamily:"system-ui"}}>Used for local day/time accuracy</div>}
+          </div>
           <button onClick={compute} disabled={loading} style={{background:`linear-gradient(135deg,${CL.pur},${CL.acc})`,color:"#000",border:"none",borderRadius:10,padding:"11px 20px",fontSize:12,fontWeight:800,cursor:"pointer",fontFamily:"system-ui",letterSpacing:1,opacity:loading?0.6:1}}>
             {loading?"✨ Reading...":"🔮 Oracle"}
           </button>
@@ -1136,6 +1605,7 @@ ${ctx}`,
           <TB id="calendar" label="30-Day" icon="📅"/>
           <TB id="bestdays" label="Best Days" icon="⭐"/>
           {dob&&<TB id="chart" label="Chart" icon="🌌"/>}
+          {tier>=3&&<TB id="partner" label="Partner" icon="💞"/>}
           {tier===4&&<TB id="team" label="Team" icon="👥"/>}
         </div>
 
@@ -1307,6 +1777,67 @@ ${ctx}`,
           </div>
         )}
 
+        {/* ══ PARTNER TAB ══ */}
+        {tab==="partner"&&tier>=3&&(
+          <div style={SC.card}>
+            <SH icon="💞" title="PARTNER & COMPATIBILITY" sub="Synastry + their reading for today" color={CL.pnk}/>
+            <div style={{background:CL.card2,borderRadius:12,padding:14,marginBottom:12}}>
+              <div style={{fontSize:11,color:CL.dim,fontFamily:"system-ui",marginBottom:8}}>Enter partner, friend, or colleague's details</div>
+              <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
+                <input type="text" value={partnerName} onChange={e=>setPartnerName(e.target.value)} placeholder="Their name" style={{flex:1,minWidth:100,padding:"8px 12px",background:CL.bg,border:`1px solid ${CL.bdr}`,borderRadius:8,color:CL.txt,fontSize:13}}/>
+                <input type="date" value={partnerDob} onChange={e=>setPartnerDob(e.target.value)} style={{flex:1,minWidth:130,padding:"8px 12px",background:CL.bg,border:`1px solid ${CL.bdr}`,borderRadius:8,color:CL.txt,fontSize:13}}/>
+                <button onClick={runPartner} disabled={!partnerName||!partnerDob} style={{background:`linear-gradient(135deg,${CL.pnk},${CL.pur})`,color:"#fff",border:"none",borderRadius:8,padding:"8px 18px",fontSize:11,fontWeight:800,cursor:"pointer",opacity:!partnerName||!partnerDob?0.4:1}}>✨ Read</button>
+                {partnerData&&<button onClick={clearPartner} style={{background:"transparent",border:`1px solid ${CL.bdr}`,borderRadius:8,padding:"8px 12px",fontSize:11,color:CL.dim,cursor:"pointer"}}>Clear</button>}
+              </div>
+            </div>
+            {partnerData&&(<>
+              {/* Compatibility score */}
+              <div style={{background:`linear-gradient(135deg,${CL.pnk}15,${CL.pur}15)`,border:`1px solid ${CL.pnk}40`,borderRadius:14,padding:16,marginBottom:12,textAlign:"center"}}>
+                <div style={{fontSize:10,color:CL.pnk,fontWeight:800,letterSpacing:2,marginBottom:6,fontFamily:"system-ui"}}>💞 SYNASTRY SCORE</div>
+                <div style={{fontSize:42,fontWeight:900,color:CL.pnk,lineHeight:1}}>{partnerData.compatScore}%</div>
+                <div style={{fontSize:13,color:CL.txt,marginTop:6,fontFamily:"system-ui",fontStyle:"italic"}}>{partnerData.compatVerdict}</div>
+                {!dob&&<div style={{fontSize:10,color:CL.dim,marginTop:6,fontFamily:"system-ui"}}>Add your own DOB above to unlock full synastry chart comparison</div>}
+              </div>
+              {/* Their reading today */}
+              <div style={{background:CL.card2,borderRadius:14,padding:14,marginBottom:10}}>
+                <div style={{fontSize:10,color:CL.acc,fontWeight:800,letterSpacing:2,marginBottom:10,fontFamily:"system-ui"}}>✨ {partnerData.name.toUpperCase()}'S READING TODAY</div>
+                <div style={{display:"flex",alignItems:"center",gap:12,marginBottom:12}}>
+                  <ProbTick probability={partnerData.probability}/>
+                  <div>
+                    <div style={{fontSize:12,color:CL.txt,fontFamily:"system-ui"}}>Overall energy: <b style={{color:pC(partnerData.probability)}}>{partnerData.probability}%</b></div>
+                    <div style={{fontSize:11,color:CL.dim,fontFamily:"system-ui",marginTop:2}}>Best: <b style={{color:CL.grn}}>{partnerData.topDomain.icon}{partnerData.topDomain.name}</b> · Challenged: <b style={{color:CL.red}}>{partnerData.bottomDomain.icon}{partnerData.bottomDomain.name}</b></div>
+                  </div>
+                </div>
+                <div style={{display:"flex",flexWrap:"wrap",gap:6}}>
+                  {partnerData.ds.slice(0,6).map((d:any)=>(
+                    <div key={d.id} style={{background:CL.bg,borderRadius:8,padding:"6px 10px",border:`1px solid ${pC(d.probability)}30`,minWidth:70,textAlign:"center"}}>
+                      <div style={{fontSize:14}}>{d.icon}</div>
+                      <div style={{fontSize:9,color:CL.dim,fontFamily:"system-ui"}}>{d.name}</div>
+                      <div style={{fontSize:13,fontWeight:800,color:pC(d.probability)}}>{d.probability}%</div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              {/* Timing alignment */}
+              {dob&&partnerData&&(()=>{
+                const myScore=data?.personalDomains?.[0]?.probability||50;
+                const theirScore=partnerData.probability;
+                const bothHigh=myScore>=60&&theirScore>=60;
+                const bothLow=myScore<40&&theirScore<40;
+                return(
+                  <div style={{background:`${bothHigh?CL.grn:bothLow?CL.red:CL.acc}10`,border:`1px solid ${bothHigh?CL.grn:bothLow?CL.red:CL.acc}30`,borderRadius:12,padding:12}}>
+                    <div style={{fontSize:10,fontWeight:800,color:bothHigh?CL.grn:bothLow?CL.red:CL.acc,letterSpacing:2,fontFamily:"system-ui",marginBottom:4}}>⚡ TIMING ALIGNMENT</div>
+                    <div style={{fontSize:12,color:CL.txt,fontFamily:"system-ui",lineHeight:1.6}}>
+                      {bothHigh?"Both of you are running high energy today — ideal for important shared decisions, meetings, or quality time together.":bothLow?"Both energies are lower today — good for rest, reflection, and private time. Avoid major decisions.":"Your energies differ today — one is carrying more, one is conserving. Be aware of this dynamic."}
+                    </div>
+                  </div>
+                );
+              })()}
+            </>)}
+            {!partnerData&&<div style={{textAlign:"center",padding:"30px",color:CL.dim,fontFamily:"system-ui",fontSize:12}}>Enter a name and date of birth above to run their reading and see your compatibility.</div>}
+          </div>
+        )}
+
         {/* ══ TEAM TAB ══ */}
         {tab==="team"&&tier===4&&(
           <div style={SC.card}>
@@ -1361,21 +1892,40 @@ ${ctx}`,
       {/* Chat panel */}
       {chatOpen&&(
         <div style={{position:"fixed",bottom:24,right:16,width:Math.min(380,window.innerWidth-32),maxHeight:"75vh",background:CL.card,border:`1px solid ${CL.pur}40`,borderRadius:16,display:"flex",flexDirection:"column",zIndex:999,boxShadow:`0 8px 40px #00000080`,overflow:"hidden"}}>
-          {/* Header with explicit close button */}
-          <div style={{padding:"12px 16px",borderBottom:`1px solid ${CL.bdr}`,background:`linear-gradient(135deg,${CL.card},#1a1230)`,flexShrink:0,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
-            <div>
-              <div style={{fontSize:11,fontWeight:800,color:CL.acc,fontFamily:"system-ui",letterSpacing:2}}>🔮 ASK THE ORACLE</div>
-              <div style={{fontSize:9,color:CL.dim,fontFamily:"system-ui",marginTop:2}}>
-                {dob?"Personal + World data loaded":"World energy only — add DOB for personal readings"}
+          {/* Header */}
+          <div style={{padding:"10px 14px",borderBottom:`1px solid ${CL.bdr}`,background:`linear-gradient(135deg,${CL.card},#1a1230)`,flexShrink:0}}>
+            <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+              <div>
+                <div style={{fontSize:11,fontWeight:800,color:CL.acc,fontFamily:"system-ui",letterSpacing:2}}>🔮 ASK THE ORACLE</div>
+                <div style={{fontSize:9,color:CL.dim,fontFamily:"system-ui",marginTop:2}}>{dob?"Personal + World data loaded":"World energy only — add DOB for personal readings"}</div>
+              </div>
+              <div style={{display:"flex",gap:6,alignItems:"center"}}>
+                {/* Saved chats button */}
+                <button onClick={()=>setShowSaved(s=>!s)} title="Saved chats" style={{background:showSaved?`${CL.acc}25`:`${CL.pur}15`,border:`1px solid ${showSaved?CL.acc:CL.pur}50`,borderRadius:8,width:30,height:30,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:13,flexShrink:0}}>📂</button>
+                {/* Save button */}
+                <button onClick={saveChat} title={`Save chat (${savedChats.length}/${MAX_SAVES})`} disabled={chatMessages.length<2||savedChats.length>=MAX_SAVES} style={{background:`${CL.grn}15`,border:`1px solid ${CL.grn}50`,borderRadius:8,width:30,height:30,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:13,flexShrink:0,opacity:chatMessages.length<2||savedChats.length>=MAX_SAVES?0.4:1}}>💾</button>
+                {/* Clear button */}
+                <button onClick={clearChat} title="Clear chat" style={{background:`${CL.acc}15`,border:`1px solid ${CL.acc}40`,borderRadius:8,width:30,height:30,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",fontSize:13,flexShrink:0}}>🗑</button>
+                {/* Close button */}
+                <button onClick={()=>setChatOpen(false)} style={{background:`${CL.red}20`,border:`1px solid ${CL.red}50`,borderRadius:8,width:30,height:30,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:CL.red,fontSize:14,fontWeight:700,flexShrink:0}}>✕</button>
               </div>
             </div>
-            {/* ── FIX 1: Clear, visible close button ── */}
-            <button
-              onClick={()=>setChatOpen(false)}
-              style={{background:`${CL.red}20`,border:`1px solid ${CL.red}50`,borderRadius:8,width:32,height:32,display:"flex",alignItems:"center",justifyContent:"center",cursor:"pointer",color:CL.red,fontSize:16,fontWeight:700,flexShrink:0}}
-            >
-              ✕
-            </button>
+            {/* Saved chats panel */}
+            {showSaved&&(
+              <div style={{marginTop:10,borderTop:`1px solid ${CL.bdr}`,paddingTop:10}}>
+                <div style={{fontSize:9,color:CL.dim,fontFamily:"system-ui",marginBottom:6,letterSpacing:1}}>SAVED CHATS ({savedChats.length}/{MAX_SAVES})</div>
+                {savedChats.length===0&&<div style={{fontSize:11,color:CL.dim,fontFamily:"system-ui",fontStyle:"italic"}}>No saved chats yet. Hit 💾 to save this one.</div>}
+                {savedChats.map(s=>(
+                  <div key={s.id} style={{display:"flex",alignItems:"center",gap:8,padding:"6px 0",borderBottom:`1px solid ${CL.bdr}30`}}>
+                    <div style={{flex:1,cursor:"pointer"}} onClick={()=>loadChat(s)}>
+                      <div style={{fontSize:10,color:CL.acc,fontFamily:"system-ui",fontWeight:700}}>{s.date}</div>
+                      <div style={{fontSize:10,color:CL.txt,fontFamily:"system-ui",opacity:0.7,overflow:"hidden",textOverflow:"ellipsis",whiteSpace:"nowrap"}}>{s.preview}</div>
+                    </div>
+                    <button onClick={()=>deleteSave(s.id)} style={{background:"transparent",border:"none",color:CL.red,cursor:"pointer",fontSize:12,opacity:0.6,flexShrink:0}}>✕</button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Messages */}
