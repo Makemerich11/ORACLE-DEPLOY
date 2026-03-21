@@ -1,4 +1,28 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {}
+const withPWA = require("next-pwa")({
+  dest: "public",
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === "development",
+  fallbacks: { document: "/offline.html" },
+  buildExcludes: [/middleware-manifest\.json$/],
+  runtimeCaching: [
+    {
+      urlPattern: /^https?:\/\/.*\/api\/.*/,
+      handler: "NetworkFirst",
+      options: { cacheName: "oracle-api", expiration: { maxEntries: 10, maxAgeSeconds: 3600 } },
+    },
+    {
+      urlPattern: /^https?.*/,
+      handler: "NetworkFirst",
+      options: { cacheName: "oracle-pages", expiration: { maxEntries: 50, maxAgeSeconds: 86400 }, networkTimeoutSeconds: 10 },
+    },
+  ],
+});
 
-module.exports = nextConfig
+const nextConfig = {
+  typescript: { ignoreBuildErrors: true },
+  compress: true,
+  poweredByHeader: false,
+};
+
+module.exports = withPWA(nextConfig);
