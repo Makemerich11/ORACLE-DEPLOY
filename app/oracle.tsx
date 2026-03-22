@@ -1885,33 +1885,148 @@ ${ctx}`,
 
         {/* ══ TEAM TAB ══ */}
         {tab==="team"&&tier===4&&(
-          <div style={SC.card}>
-            <SH icon="👥" title="TEAM ORACLE" sub="Combined reading for your group" color={CL.pnk}/>
-            {teamMembers.length<5&&<div style={{background:CL.card2,borderRadius:12,padding:14,marginBottom:12}}>
-              <div style={{fontSize:11,color:CL.dim,fontFamily:"system-ui",marginBottom:8}}>Add member ({teamMembers.length}/5)</div>
+          <div>
+            {/* Add member */}
+            {teamMembers.length<5&&<div style={{...SC.card,borderColor:CL.pnk+"30"}}>
+              <div style={{fontSize:10,letterSpacing:2,color:CL.pnk,fontWeight:800,fontFamily:"system-ui",marginBottom:10}}>👥 ADD TEAM MEMBER ({teamMembers.length}/5)</div>
               <div style={{display:"flex",gap:8,flexWrap:"wrap"}}>
                 <input type="text" value={newName} onChange={e=>setNewName(e.target.value)} placeholder="Name" style={{flex:1,minWidth:100,padding:"8px 12px",background:CL.bg,border:`1px solid ${CL.bdr}`,borderRadius:8,color:CL.txt,fontSize:13}}/>
                 <input type="date" value={newDob} onChange={e=>setNewDob(e.target.value)} inputMode="none" style={{flex:1,minWidth:130,padding:"8px 12px",background:CL.bg,border:`1px solid ${CL.bdr}`,borderRadius:8,color:CL.txt,fontSize:13}}/>
                 <button onClick={addTeam} disabled={!newName||!newDob} style={{background:`linear-gradient(135deg,${CL.pnk},${CL.pur})`,color:"#000",border:"none",borderRadius:8,padding:"8px 18px",fontSize:11,fontWeight:800,cursor:"pointer",opacity:!newName||!newDob?0.4:1}}>+ Add</button>
               </div>
             </div>}
-            {teamData.map((m:any)=>(<div key={m.id} style={{background:CL.card2,borderRadius:12,padding:14,marginBottom:8,borderLeft:`4px solid ${pC(m.probability)}`}}>
-              <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",gap:10}}>
-                <div style={{flex:1}}>
-                  <div style={{fontSize:14,fontWeight:700,fontFamily:"system-ui"}}>{m.name}</div>
-                  <div style={{fontSize:11,color:CL.dim,fontFamily:"system-ui",marginTop:2}}>Best: <b style={{color:CL.grn}}>{m.topDomain.icon}{m.topDomain.name}</b> · Challenged: <b style={{color:CL.red}}>{m.bottomDomain.icon}{m.bottomDomain.name}</b></div>
+
+            {/* Team energy summary */}
+            {teamData.length>1&&(()=>{
+              const avg=Math.round(teamData.reduce((s:number,m:any)=>s+m.probability,0)/teamData.length);
+              const allHigh=teamData.every((m:any)=>m.probability>=65);
+              const allLow=teamData.every((m:any)=>m.probability<45);
+              const topMember=[...teamData].sort((a:any,b:any)=>b.probability-a.probability)[0];
+              const restMember=[...teamData].sort((a:any,b:any)=>a.probability-b.probability)[0];
+              // Find shared strong domain
+              const domScores:Record<string,number>={};
+              teamData.forEach((m:any)=>m.ds?.forEach((d:any)=>{domScores[d.id]=(domScores[d.id]||0)+d.probability;}));
+              const sharedBest=Object.entries(domScores).sort(([,a],[,b])=>b-a)[0];
+              const sharedDomain=DOMAINS.find(d=>d.id===sharedBest?.[0]);
+              return(
+                <div style={{...SC.card,background:`linear-gradient(160deg,${CL.pnk}15,#0a0816)`,borderColor:CL.pnk+"30",marginBottom:10}}>
+                  <div style={{fontSize:10,letterSpacing:2,color:CL.pnk,fontWeight:800,fontFamily:"system-ui",marginBottom:12}}>⚡ TEAM ENERGY TODAY</div>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:8,marginBottom:14}}>
+                    <div style={{background:CL.card2,borderRadius:10,padding:10,textAlign:"center"}}>
+                      <div style={{fontSize:22,fontWeight:900,color:pC(avg)}}>{avg}%</div>
+                      <div style={{fontSize:9,color:CL.dim,fontFamily:"system-ui",marginTop:2}}>Team Average</div>
+                    </div>
+                    <div style={{background:CL.card2,borderRadius:10,padding:10,textAlign:"center"}}>
+                      <div style={{fontSize:13,fontWeight:800,color:CL.grn}}>{topMember.name}</div>
+                      <div style={{fontSize:9,color:CL.dim,fontFamily:"system-ui",marginTop:2}}>🌟 Leading today</div>
+                    </div>
+                    <div style={{background:CL.card2,borderRadius:10,padding:10,textAlign:"center"}}>
+                      {sharedDomain&&<div style={{fontSize:16}}>{sharedDomain.icon}</div>}
+                      <div style={{fontSize:9,color:CL.dim,fontFamily:"system-ui",marginTop:2}}>Shared strength</div>
+                    </div>
+                  </div>
+                  <div style={{background:CL.bg,borderRadius:10,padding:"10px 12px",fontSize:12,color:CL.txt,fontFamily:"system-ui",lineHeight:1.7}}>
+                    {allHigh?`Exceptional team day — everyone is running high energy. Ideal for important group decisions, launches, or major meetings.`:
+                     allLow?`The whole team is in a lower energy window today. Better for planning, reflection, and preparation than bold action.`:
+                     `Mixed team energy today. ${topMember.name} is carrying the most planetary support — lean on them for lead roles. ${restMember.name} is better in a support capacity today.`}
+                  </div>
                 </div>
-                <div style={{display:"flex",gap:8,alignItems:"center"}}>
-                  <ProbTick probability={m.probability}/>
-                  <button onClick={()=>removeTeam(m.id)} style={{background:"transparent",border:"none",color:CL.dim,cursor:"pointer",fontSize:14}}>✕</button>
+              );
+            })()}
+
+            {/* Individual member cards */}
+            {teamData.map((m:any)=>(
+              <div key={m.id} style={{...SC.card,borderLeft:`4px solid ${pC(m.probability)}`,marginBottom:10}}>
+                {/* Header */}
+                <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:12}}>
+                  <div style={{flex:1}}>
+                    <div style={{fontSize:16,fontWeight:800,fontFamily:"system-ui",color:CL.txt,marginBottom:3}}>{m.name}</div>
+                    <div style={{fontSize:10,color:CL.dim,fontFamily:"system-ui"}}>
+                      🌟 <b style={{color:CL.grn}}>{m.topDomain?.icon}{m.topDomain?.name}</b>
+                      <span style={{margin:"0 6px",opacity:0.4}}>·</span>
+                      ⚠️ <b style={{color:CL.red}}>{m.bottomDomain?.icon}{m.bottomDomain?.name}</b>
+                    </div>
+                  </div>
+                  <div style={{display:"flex",alignItems:"center",gap:8,flexShrink:0}}>
+                    <div style={{textAlign:"right"}}>
+                      <div style={{fontSize:28,fontWeight:900,color:pC(m.probability),lineHeight:1,letterSpacing:-1}}>{m.probability}%</div>
+                      <div style={{fontSize:8,fontWeight:800,color:pC(m.probability),letterSpacing:1,opacity:0.7}}>{m.probability>=70?"STRONG":m.probability>=50?"SOLID":"SUPPORT"}</div>
+                    </div>
+                    <button onClick={()=>removeTeam(m.id)} style={{background:"transparent",border:`1px solid ${CL.bdr}`,borderRadius:6,color:CL.dim,cursor:"pointer",fontSize:11,padding:"4px 8px",fontFamily:"system-ui"}}>✕</button>
+                  </div>
                 </div>
+
+                {/* Overall bar */}
+                <div style={{height:4,background:CL.bdr,borderRadius:2,overflow:"hidden",marginBottom:12}}>
+                  <div style={{width:`${m.probability}%`,height:"100%",background:`linear-gradient(90deg,${pC(m.probability)}70,${pC(m.probability)})`,borderRadius:2}}/>
+                </div>
+
+                {/* Verdict */}
+                <div style={{fontSize:12,color:CL.txt,fontFamily:"system-ui",lineHeight:1.7,marginBottom:12,fontStyle:"italic",borderLeft:`2px solid ${pC(m.probability)}40`,paddingLeft:10}}>
+                  {m.overall>25?`${m.name} is running strong today — elevated energy and strong planetary support. Lead role recommended.`:
+                   m.overall>5?`${m.name} is in solid form today — dependable and well-placed for consistent action.`:
+                   m.overall>-15?`${m.name} has some headwinds today. Best in a support or collaborative role.`:
+                   `${m.name}'s energy is significantly challenged today. Protect from high-pressure situations.`}
+                </div>
+
+                {/* Domain mini bars */}
+                {m.ds&&<div>
+                  <div style={{fontSize:9,letterSpacing:1,color:CL.dim,fontWeight:700,fontFamily:"system-ui",marginBottom:8}}>DOMAIN BREAKDOWN</div>
+                  <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:6}}>
+                    {m.ds.slice(0,6).map((d:any)=>(
+                      <div key={d.id} style={{background:CL.card2,borderRadius:8,padding:"8px 10px"}}>
+                        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4}}>
+                          <div style={{fontSize:12}}>{d.icon}</div>
+                          <div style={{fontSize:12,fontWeight:800,color:pC(d.probability)}}>{d.probability}%</div>
+                        </div>
+                        <div style={{fontSize:8,color:CL.dim,fontFamily:"system-ui",marginBottom:4,letterSpacing:0.5}}>{d.name.split(" ")[0].toUpperCase()}</div>
+                        <div style={{height:3,background:CL.bdr,borderRadius:2,overflow:"hidden"}}>
+                          <div style={{width:`${d.probability}%`,height:"100%",background:`linear-gradient(90deg,${pC(d.probability)}60,${pC(d.probability)})`,borderRadius:2}}/>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>}
               </div>
-              <div style={{fontSize:12,color:CL.txt,fontFamily:"system-ui",lineHeight:1.7,marginTop:10,paddingTop:8,borderTop:`1px solid ${CL.bdr}30`}}>
-                {m.overall>25?`${m.name} is running strong today — elevated energy and strong planetary support.`:m.overall>5?`${m.name} is in solid form — dependable, well-placed for mid-level action.`:m.overall>-15?`${m.name} has some headwinds. Support role over leadership today.`:`${m.name}'s energy is significantly challenged. Protect from high-pressure situations.`}
+            ))}
+
+            {/* Team ranking */}
+            {teamData.length>1&&(
+              <div style={{...SC.card,borderColor:CL.pnk+"40"}}>
+                <div style={{fontSize:10,letterSpacing:2,color:CL.pnk,fontWeight:800,fontFamily:"system-ui",marginBottom:12}}>🏆 TEAM RANKING</div>
+                {[...teamData].sort((a:any,b:any)=>b.overall-a.overall).map((m:any,i:number)=>(
+                  <div key={m.id} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 0",borderBottom:`1px solid ${CL.bdr}20`}}>
+                    <div style={{width:28,height:28,borderRadius:"50%",background:`${pC(m.probability)}20`,border:`2px solid ${pC(m.probability)}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:12,fontWeight:900,color:pC(m.probability),fontFamily:"system-ui",flexShrink:0}}>{i+1}</div>
+                    <div style={{flex:1}}>
+                      <div style={{fontSize:13,fontWeight:800,fontFamily:"system-ui",color:CL.txt}}>{m.name}</div>
+                      <div style={{fontSize:10,color:CL.dim,fontFamily:"system-ui",marginTop:1}}>
+                        {i===0?"🌟 Lead role — highest energy today":
+                         i===teamData.length-1?"🌿 Support role — conserve energy today":
+                         "⚖️ Collaborative role — solid steady energy"}
+                      </div>
+                    </div>
+                    <div style={{textAlign:"right",flexShrink:0}}>
+                      <div style={{fontSize:20,fontWeight:900,color:pC(m.probability),letterSpacing:-1}}>{m.probability}%</div>
+                      <div style={{height:3,width:60,background:CL.bdr,borderRadius:2,overflow:"hidden",marginTop:3}}>
+                        <div style={{width:`${m.probability}%`,height:"100%",background:pC(m.probability),borderRadius:2}}/>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+
+                {/* Team synergy note */}
+                {teamData.length>=2&&(()=>{
+                  const spread=Math.max(...teamData.map((m:any)=>m.probability))-Math.min(...teamData.map((m:any)=>m.probability));
+                  return(
+                    <div style={{marginTop:12,background:CL.bg,borderRadius:10,padding:"10px 12px",fontSize:11,color:CL.dim,fontFamily:"system-ui",lineHeight:1.7}}>
+                      <b style={{color:CL.pnk}}>Team spread: {spread}%</b> — {spread<20?"Energies are closely aligned today — great for collective decisions and shared focus.":spread<40?"Some variation in team energy — pair high-energy members with complex tasks.":"Wide energy spread today — assign tasks based on individual strengths, avoid one-size-fits-all approaches."}
+                    </div>
+                  );
+                })()}
               </div>
-            </div>))}
-            {teamData.length>1&&(<div style={{...SC.card,marginTop:4,borderColor:CL.pnk+"40"}}><SH icon="🔗" title="TEAM RANKING" color={CL.pnk}/>{[...teamData].sort((a:any,b:any)=>b.overall-a.overall).map((m:any,i:number)=>(<div key={m.id} style={{display:"flex",alignItems:"center",gap:12,padding:"10px 0",borderBottom:`1px solid ${CL.bdr}30`}}><div style={{width:24,height:24,borderRadius:"50%",background:`${pC(m.probability)}20`,border:`2px solid ${pC(m.probability)}`,display:"flex",alignItems:"center",justifyContent:"center",fontSize:10,fontWeight:800,color:pC(m.probability),fontFamily:"system-ui",flexShrink:0}}>{i+1}</div><div style={{flex:1}}><div style={{fontSize:13,fontWeight:700,fontFamily:"system-ui"}}>{m.name}</div><div style={{fontSize:10,color:CL.dim,fontFamily:"system-ui"}}>{i===0?"🌟 Lead role today":i===teamData.length-1?"🌿 Rest & support today":"⚖️ Collaborative role"}</div></div><ProbTick probability={m.probability}/></div>))}</div>)}
-            {teamData.length===0&&<div style={{textAlign:"center",padding:"30px",color:CL.dim,fontFamily:"system-ui",fontSize:12}}>Add your first team member above.</div>}
+            )}
+
+            {teamData.length===0&&<div style={{textAlign:"center",padding:"40px 20px",color:CL.dim,fontFamily:"system-ui",fontSize:12,fontStyle:"italic"}}>Add your first team member above to see their reading.</div>}
           </div>
         )}
       </>)}
