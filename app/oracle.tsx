@@ -149,13 +149,13 @@ const TIERS = [
   {id:1, name:"Basic",  price:"$9.99",  period:"/mo",color:"#6b6580",tagline:"Your daily cosmic pulse",
    features:["All 9 domains — scores & verdicts","7-day forecast","Moon phase & retrograde alerts","Should I...? quick guide","World Energy snapshot"],
    locked:["Signal breakdown","30-day calendar","Deep domain dives","Birth time precision","Team mode"]},
-  {id:2, name:"Plus",   price:"$29.99", period:"/mo",color:"#9b7fe6",tagline:"Full signal intelligence",
+  {id:2, name:"Plus",   price:"$24.99", period:"/mo",color:"#9b7fe6",tagline:"Full signal intelligence",
    features:["Everything in Basic","Full signal breakdown — the WHY","30-day calendar + Best Days","Natal chart + transits","Domain deep-dives (all 9)","World vs Personal comparison"],
    locked:["Birth time + location precision","Team mode","Deeper domain specialisations"]},
-  {id:3, name:"Pro",    price:"$79.99", period:"/mo",color:"#f6ad3c",tagline:"Maximum precision",featured:true,
+  {id:3, name:"Pro",    price:"$39.99", period:"/mo",color:"#f6ad3c",tagline:"Maximum precision",featured:true,
    features:["Everything in Plus","Birth time → Ascendant + Houses","Location → precise planetary hours","Dignity, combustion, cazimi, sect","Solar arc + progressions","Partner & compatibility mode — synastry"],
    locked:["Oracle chatbot","Team mode (up to 5)"]},
-  {id:4, name:"Pro+",   price:"$99.99", period:"/mo",color:"#e879a0",tagline:"Your personal Oracle",
+  {id:4, name:"Pro+",   price:"$99.99", period:"/mo",color:"#e879a0",tagline:"Your personal Oracle",hidden:true,
    features:["Everything in Pro","Team mode — 5 people","Oracle AI chatbot","Daily push readings","People in Your Orbit","Weekly deep-dive reports"]},
 ];
 
@@ -798,6 +798,7 @@ export default function App() {
   const [newDob,setNewDob]=useState("");
   const [teamData,setTeamData]=useState<any[]>([]);
   const [currentCity,setCurrentCity]=useState("");
+  const [selectedDomains,setSelectedDomains]=useState<string[]>([]); // Basic tier — user picks 3
   // PWA install prompt
   const [installPrompt,setInstallPrompt]=useState<any>(null);
   const [showIOSPrompt,setShowIOSPrompt]=useState(false);
@@ -1214,7 +1215,7 @@ ${ctx}`,
           </div>
           {/* Tier switcher — coloured */}
           <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:5,flexWrap:"wrap",width:"100%"}}>
-            {TIERS.map(t=>(
+            {TIERS.filter((t:any)=>!t.hidden).map(t=>(
               <button key={t.id} onClick={()=>setTier(t.id)}
                 style={{
                   background:tier===t.id?`${t.color}25`:"transparent",
@@ -1405,7 +1406,7 @@ ${ctx}`,
             Start with what calls to you. Upgrade any time.
           </div>
           <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10}}>
-            {TIERS.filter(t=>t.id>0).map(t=>(
+            {TIERS.filter(t=>t.id>0&&!(t as any).hidden).map(t=>(
               <div key={t.id} className="upgrade-tier" onClick={()=>handleUpgrade(t.id)}
                 style={{
                   background:t.id===2?`linear-gradient(160deg,${CL.card},#1a1035)`:CL.card,
@@ -1496,7 +1497,7 @@ ${ctx}`,
       <div style={{textAlign:"center",padding:"18px 0 10px"}}>
         <h1 style={{fontSize:28,fontWeight:700,margin:"0 0 12px",fontStyle:"italic",background:`linear-gradient(135deg,${CL.acc},${CL.pnk},${CL.pur})`,WebkitBackgroundClip:"text",WebkitTextFillColor:"transparent",animation:"glow 5s ease infinite",letterSpacing:1}}>My Oracle</h1>
         <div style={{display:"flex",alignItems:"center",justifyContent:"center",gap:6,flexWrap:"wrap"}}>
-          {TIERS.map(t=>(<button key={t.id} onClick={()=>setTier(t.id)} style={{background:tier===t.id?`${t.color}25`:"transparent",color:tier===t.id?t.color:`${t.color}60`,border:`1px solid ${tier===t.id?t.color:t.color+"40"}`,borderRadius:20,padding:"4px 14px",fontSize:10,fontWeight:700,cursor:"pointer",fontFamily:"system-ui",transition:"all 0.15s"}}>{t.name} {t.price}</button>))}
+          {TIERS.filter((t:any)=>!t.hidden).map(t=>(<button key={t.id} onClick={()=>setTier(t.id)} style={{background:tier===t.id?`${t.color}25`:"transparent",color:tier===t.id?t.color:`${t.color}60`,border:`1px solid ${tier===t.id?t.color:t.color+"40"}`,borderRadius:20,padding:"4px 14px",fontSize:10,fontWeight:700,cursor:"pointer",fontFamily:"system-ui",transition:"all 0.15s"}}>{t.name} {t.price}</button>))}
         </div>
       </div>
 
@@ -1708,23 +1709,64 @@ ${ctx}`,
             })()}
           </div>
 
-          {data.personalDomains.map((d:any)=>(
+          {/* Basic tier — domain picker */}
+          {tier===1&&selectedDomains.length<3&&(
+            <div style={{background:CL.card,border:`1px solid ${CL.acc}40`,borderRadius:16,padding:16,marginBottom:12}}>
+              <div style={{fontSize:10,color:CL.acc,fontWeight:800,letterSpacing:2,fontFamily:"system-ui",marginBottom:6}}>CHOOSE YOUR 3 DOMAINS</div>
+              <div style={{fontSize:11,color:CL.dim,fontFamily:"system-ui",marginBottom:12,lineHeight:1.5}}>Pick 3 life domains to track. Upgrade to Plus to unlock all 9.</div>
+              <div style={{display:"flex",flexWrap:"wrap",gap:8}}>
+                {data.personalDomains.map((d:any)=>{
+                  const picked=selectedDomains.includes(d.id);
+                  return(<button key={d.id} onClick={()=>{
+                    if(picked)setSelectedDomains(s=>s.filter(x=>x!==d.id));
+                    else if(selectedDomains.length<3)setSelectedDomains(s=>[...s,d.id]);
+                  }} style={{
+                    background:picked?`${CL.acc}25`:CL.card2,
+                    border:`1px solid ${picked?CL.acc:CL.bdr}`,
+                    borderRadius:10,padding:"6px 12px",
+                    fontSize:11,fontWeight:700,
+                    color:picked?CL.acc:CL.dim,
+                    cursor:selectedDomains.length>=3&&!picked?"default":"pointer",
+                    opacity:selectedDomains.length>=3&&!picked?0.4:1,
+                    fontFamily:"system-ui",
+                    transition:"all 0.15s",
+                  }}>{d.icon} {d.name}</button>);
+                })}
+              </div>
+              <div style={{fontSize:10,color:CL.dim,fontFamily:"system-ui",marginTop:10}}>{selectedDomains.length}/3 selected</div>
+            </div>
+          )}
+
+          {data.personalDomains.map((d:any)=>{
+            const isBasicLocked=tier===1&&selectedDomains.length===3&&!selectedDomains.includes(d.id);
+            const isBasicUnpicked=tier===1&&selectedDomains.length<3&&!selectedDomains.includes(d.id);
+            return(
             <div key={d.id}
-              style={{background:CL.card,border:`1px solid ${CL.bdr}`,borderRadius:16,padding:16,marginBottom:9,cursor:"pointer",transition:"transform 0.2s"}}
-              onMouseEnter={e=>(e.currentTarget.style.transform="translateY(-2px)")}
-              onMouseLeave={e=>(e.currentTarget.style.transform="none")}
+              style={{background:CL.card,border:`1px solid ${CL.bdr}`,borderRadius:16,padding:16,marginBottom:9,cursor:isBasicLocked?"default":"pointer",transition:"transform 0.2s",
+                opacity:isBasicUnpicked?0.5:1,
+                filter:isBasicLocked?"blur(1px)":"none",
+                position:"relative",overflow:"hidden"}}
+              onMouseEnter={e=>{if(!isBasicLocked)(e.currentTarget as HTMLDivElement).style.transform="translateY(-2px)";}}
+              onMouseLeave={e=>{(e.currentTarget as HTMLDivElement).style.transform="none";}}
+              onClick={()=>{if(isBasicLocked){setTier(2);}}}
             >
+            {isBasicLocked&&<div style={{position:"absolute",top:0,left:0,right:0,bottom:0,display:"flex",alignItems:"center",justifyContent:"center",background:"rgba(7,6,13,0.6)",zIndex:2,borderRadius:16}}>
+              <div style={{background:CL.card,border:`1px solid ${CL.pur}50`,borderRadius:10,padding:"8px 16px",textAlign:"center"}}>
+                <div style={{fontSize:11,fontWeight:800,color:CL.pur,fontFamily:"system-ui"}}>🔒 Unlock with Plus</div>
+                <div style={{fontSize:9,color:CL.dim,fontFamily:"system-ui",marginTop:2}}>Tap to upgrade →</div>
+              </div>
+            </div>}
               <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:10}}>
-                <div style={{display:"flex",alignItems:"center",gap:10,flex:1,minWidth:0}} onClick={()=>setDeepDiveId(d.id)}>
+                <div style={{display:"flex",alignItems:"center",gap:10,flex:1,minWidth:0}} onClick={()=>{if(!isBasicLocked)setDeepDiveId(d.id);}}>
                   <div style={{fontSize:22,flexShrink:0}}>{d.icon}</div>
                   <div style={{minWidth:0}}>
                     <div style={{fontSize:14,fontWeight:800,fontFamily:"system-ui",color:CL.txt}}>{d.name}</div>
-                    <div style={{fontSize:10,color:CL.dim,fontFamily:"system-ui",marginTop:2,lineHeight:1.5}}>{getVerdict(d.score,d.id,d.greenCount,d.redCount)}</div>
+                    <div style={{fontSize:10,color:CL.dim,fontFamily:"system-ui",marginTop:2,lineHeight:1.5}}>{isBasicLocked?"Upgrade to see your reading":getVerdict(d.score,d.id,d.greenCount,d.redCount)}</div>
                   </div>
                 </div>
-                <div style={{flexShrink:0,marginLeft:12,textAlign:"right"}} onClick={()=>setDeepDiveId(d.id)}>
-                  <div style={{fontSize:32,fontWeight:900,lineHeight:1,letterSpacing:-1,color:pC(d.probability)}}>{d.probability}%</div>
-                  <div style={{fontSize:8,fontWeight:800,letterSpacing:1,color:pC(d.probability),opacity:0.7,marginTop:2}}>{d.probability>=70?"GO":d.probability>=50?"~OK":"WAIT"}</div>
+                <div style={{flexShrink:0,marginLeft:12,textAlign:"right"}} onClick={()=>{if(!isBasicLocked)setDeepDiveId(d.id);}}>
+                  <div style={{fontSize:32,fontWeight:900,lineHeight:1,letterSpacing:-1,color:isBasicLocked?CL.dim:pC(d.probability)}}>{isBasicLocked?"??":d.probability+"%"}</div>
+                  <div style={{fontSize:8,fontWeight:800,letterSpacing:1,color:isBasicLocked?CL.dim:pC(d.probability),opacity:0.7,marginTop:2}}>{isBasicLocked?"LOCKED":d.probability>=70?"GO":d.probability>=50?"~OK":"WAIT"}</div>
                 </div>
               </div>
               <div style={{display:"flex",alignItems:"center",gap:8}}>
@@ -1746,7 +1788,7 @@ ${ctx}`,
                 </div>
               )}
             </div>
-          ))}
+          );})}
         </>)}
 
         {/* ══ CALENDAR TAB ══ */}
